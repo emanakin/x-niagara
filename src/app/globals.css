@@ -226,3 +226,30 @@ section {
   overflow: hidden;
   z-index: 1;
 }
+
+/* Ensure proper spacing below navbar */
+main {
+  padding-top: 80px; /* Adjust this to match your navbar height */
+}
+
+/* Center section titles on mobile */
+@media (max-width: 768px) {
+  main {
+    padding-top: 70px; /* Slightly reduced for mobile */
+  }
+
+  section h2 {
+    text-align: center !important;
+    width: 100%;
+  }
+
+  /* Add padding to sections for mobile */
+  section {
+    padding: 60px 0;
+  }
+
+  /* Ensure first section has enough space from navbar */
+  section:first-of-type {
+    padding-top: 100px;
+  }
+}

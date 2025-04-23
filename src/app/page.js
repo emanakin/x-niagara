@@ -14,11 +14,15 @@ import {
   faPhone,
   faMapMarkerAlt,
   faBars,
+  faGlobe,
+  faUser,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faLinkedin,
   faInstagram,
   faTwitter,
+  faGithub,
 } from "@fortawesome/free-brands-svg-icons";
 
 // Define the Home Page component
@@ -39,12 +43,59 @@ export default function HomePage() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  // Close mobile menu when clicking outside or on a link
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  // Handle link click in mobile menu
+  const handleNavLinkClick = (e, targetId) => {
+    if (targetId) {
+      e.preventDefault();
+      closeMobileMenu();
+      const target = document.getElementById(targetId);
+      if (target) {
+        // Add delay to ensure menu closes first
+        setTimeout(() => {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 300);
+      }
+    } else {
+      closeMobileMenu();
+    }
+  };
+
   // Add to refs for scroll reveal
   const addToRefs = (el, index) => {
     if (el && !revealRefs.current.includes(el)) {
       revealRefs.current.push(el);
     }
   };
+
+  // Add useEffect for outside click detection to close menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        mobileMenuOpen &&
+        !event.target.closest(`.${styles.nav}`) &&
+        !event.target.closest(`.${styles.navToggle}`)
+      ) {
+        closeMobileMenu();
+      }
+    };
+
+    // Add when the menu is open
+    if (mobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     // Header scroll effect
@@ -114,45 +165,51 @@ export default function HomePage() {
           </Link>
 
           {/* Navigation with responsive toggle */}
+          <button
+            className={styles.navToggle}
+            onClick={toggleMobileMenu}
+            aria-label="Toggle navigation menu"
+          >
+            <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} />
+          </button>
+
           <nav
             className={`${styles.nav} ${mobileMenuOpen ? styles.active : ""}`}
           >
-            <ul>
-              <li>
-                <a href="#hero">Home</a>
-              </li>
-              <li>
-                <a href="#intro">About</a>
-              </li>
-              <li>
-                <a href="#services">Services</a>
-              </li>
-              <li>
-                <a href="#case-studies">Portfolio</a>
-              </li>
-              <li>
-                <Link href="/contact">Contact</Link>
-              </li>
-              <li>
-                <Link href="/blog">Blog</Link>
-              </li>
-            </ul>
+            <a
+              href="#services"
+              onClick={(e) => handleNavLinkClick(e, "services")}
+            >
+              Services
+            </a>
+            <a
+              href="#founders"
+              onClick={(e) => handleNavLinkClick(e, "founders")}
+            >
+              About Us
+            </a>
+            <a
+              href="#testimonials"
+              onClick={(e) => handleNavLinkClick(e, "testimonials")}
+            >
+              Testimonials
+            </a>
+            <a
+              href="#contact"
+              onClick={(e) => handleNavLinkClick(e, "contact")}
+            >
+              Contact
+            </a>
           </nav>
-
-          {/* Mobile menu toggle with state */}
-          <button
-            className={styles.menuToggle}
-            aria-label="Toggle navigation"
-            onClick={toggleMobileMenu}
-          >
-            <FontAwesomeIcon icon={faBars} />
-          </button>
         </div>
       </header>
 
       <main>
         {/* Hero Section */}
-        <section id="hero" className={styles.hero}>
+        <section
+          id="hero"
+          className={`${styles.hero} ${styles.section} ${styles.first}`}
+        >
           <div className={styles.container}>
             <h1
               className={`${styles.scrollReveal} ${styles.delay1}`}
@@ -172,18 +229,18 @@ export default function HomePage() {
               className={`${styles.ctaButtons} ${styles.scrollReveal} ${styles.delay3}`}
               ref={(el) => addToRefs(el, 2)}
             >
-              <Link
-                href="/contact"
+              <a
+                href="https://calendly.com/boobeargaminginc/30min"
                 className={`${styles.btn} ${styles.btnPrimary}`}
               >
                 Book a Consultation
-              </Link>
-              <Link
-                href="#case-studies"
+              </a>
+              <a
+                href="#services"
                 className={`${styles.btn} ${styles.btnSecondary}`}
               >
-                View Our Work
-              </Link>
+                Our Services
+              </a>
             </div>
           </div>
         </section>
@@ -206,12 +263,19 @@ export default function HomePage() {
                 challenges holistically, ensuring both technical excellence and
                 strategic marketing alignment.
               </p>
-              <Link
-                href="/about"
+              <a
+                href="#founders"
                 className={`${styles.btn} ${styles.btnPrimary}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("founders").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }}
               >
                 Learn More About Us
-              </Link>
+              </a>
             </div>
             <div
               className={`${styles.introImages} ${styles.scrollReveal} ${styles.delay2}`}
@@ -241,7 +305,7 @@ export default function HomePage() {
         <section id="services" className={styles.services}>
           <div className={styles.container}>
             <h2
-              className={`${styles.scrollReveal} ${styles.delay1}`}
+              className={`${styles.sectionTitle} ${styles.scrollReveal} ${styles.delay1}`}
               ref={(el) => addToRefs(el, 5)}
             >
               Our Core Services
@@ -325,7 +389,7 @@ export default function HomePage() {
               className={`${styles.centeredText} ${styles.scrollReveal} ${styles.delay2}`}
               ref={(el) => addToRefs(el, 11)}
             >
-              We're proud to partner with innovative companies in St.
+              We&apos;re proud to partner with innovative companies in St.
               Catharines, Niagara Falls, and beyond, helping them achieve
               digital success.
             </p>
@@ -334,31 +398,31 @@ export default function HomePage() {
               ref={(el) => addToRefs(el, 12)}
             >
               <Image
-                src="/images/client-1.png"
+                src="/images/clinet-1.png"
                 alt="Client Logo 1"
                 width={150}
                 height={50}
               />
               <Image
-                src="/images/client-2.png"
+                src="/images/clinet-2.png"
                 alt="Client Logo 2"
                 width={150}
                 height={50}
               />
               <Image
-                src="/images/client-3.png"
+                src="/images/clinet-3.png"
                 alt="Client Logo 3"
                 width={150}
                 height={50}
               />
               <Image
-                src="/images/client-4.png"
+                src="/images/clinet-4.png"
                 alt="Client Logo 4"
                 width={150}
                 height={50}
               />
               <Image
-                src="/images/client-5.png"
+                src="/images/clinet-5.jpg"
                 alt="Client Logo 5"
                 width={150}
                 height={50}
@@ -378,7 +442,111 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Client Testimonials Section (Dark Background) */}
+        {/* Add Meet the Founders Section - NEW */}
+        <section id="founders" className={styles.founders}>
+          <div className={styles.container}>
+            <h2
+              className={`${styles.scrollReveal} ${styles.delay1}`}
+              ref={(el) => addToRefs(el, 20)}
+            >
+              Meet the Founders
+            </h2>
+            <p
+              className={`${styles.centeredText} ${styles.scrollReveal} ${styles.delay2}`}
+              ref={(el) => addToRefs(el, 21)}
+            >
+              The passionate duo bringing tech and marketing expertise to the
+              Niagara Region.
+            </p>
+
+            <div
+              className={`${styles.foundersGrid} ${styles.scrollReveal} ${styles.delay3}`}
+              ref={(el) => addToRefs(el, 22)}
+            >
+              {/* Founder 1 */}
+              <div className={styles.founderCard}>
+                <div className={styles.founderImage}>
+                  <Image
+                    src="/images/team-member-1.jpg"
+                    alt="Favour"
+                    width={250}
+                    height={300}
+                    objectFit="cover"
+                  />
+                </div>
+                <h3>Favour</h3>
+                <p className={styles.founderTitle}>Marketing Strategist</p>
+                <p className={styles.founderBio}>
+                  Digital marketing expert with a passion for helping local
+                  businesses thrive in the online marketplace.
+                </p>
+                <div className={styles.founderLinks}>
+                  <a
+                    href="https://www.linkedin.com/in/favouriranola/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Favour's LinkedIn"
+                  >
+                    <FontAwesomeIcon icon={faLinkedin} />
+                  </a>
+                  <a href="tel:+13658802271" aria-label="Call Favour">
+                    <FontAwesomeIcon icon={faPhone} />
+                  </a>
+                  <a
+                    href="https://favouriranolaportfolio.my.canva.site/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Favour's Website"
+                  >
+                    <FontAwesomeIcon icon={faGlobe} />
+                  </a>
+                </div>
+              </div>
+
+              {/* Founder 2 */}
+              <div className={styles.founderCard}>
+                <div className={styles.founderImage}>
+                  <Image
+                    src="/images/team-member-2.jpg"
+                    alt="Emmanuel"
+                    width={250}
+                    height={300}
+                    objectFit="cover"
+                  />
+                </div>
+                <h3>Emmanuel</h3>
+                <p className={styles.founderTitle}>Software Development Lead</p>
+                <p className={styles.founderBio}>
+                  Full-stack developer with expertise in creating seamless,
+                  user-focused web applications and software solutions.
+                </p>
+                <div className={styles.founderLinks}>
+                  <a
+                    href="https://www.linkedin.com/in/emanakin/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Emmanuel's LinkedIn"
+                  >
+                    <FontAwesomeIcon icon={faLinkedin} />
+                  </a>
+                  <a href="tel:+19053246652" aria-label="Call Emmanuel">
+                    <FontAwesomeIcon icon={faPhone} />
+                  </a>
+                  <a
+                    href="https://www.emmanuelakinlosotu.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Emmanuel's Website"
+                  >
+                    <FontAwesomeIcon icon={faGlobe} />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
         <section id="testimonials" className={styles.testimonials}>
           <div className={`${styles.container} ${styles.testimonialContainer}`}>
             <h2
@@ -387,6 +555,7 @@ export default function HomePage() {
             >
               What Our Clients Say
             </h2>
+
             {/* Testimonial 1 */}
             <div
               className={`${styles.testimonial} ${styles.scrollReveal} ${styles.delay2}`}
@@ -399,6 +568,7 @@ export default function HomePage() {
               </blockquote>
               <cite>– Satisfied Client A, Niagara Falls</cite>
             </div>
+
             {/* Testimonial 2 */}
             <div
               className={`${styles.testimonial} ${styles.scrollReveal} ${styles.delay3}`}
@@ -413,45 +583,180 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Contact Section (Add this instead of just having footer) */}
+        <section id="contact" className={styles.contact}>
+          <div className={styles.container}>
+            <h2
+              className={`${styles.scrollReveal} ${styles.delay1}`}
+              ref={(el) => addToRefs(el, 23)}
+            >
+              Get In Touch
+            </h2>
+            <p
+              className={`${styles.centeredText} ${styles.scrollReveal} ${styles.delay2}`}
+              ref={(el) => addToRefs(el, 24)}
+            >
+              Ready to elevate your digital presence? Reach out to discuss how
+              we can help your business grow.
+            </p>
+
+            <div
+              className={`${styles.contactGrid} ${styles.scrollReveal} ${styles.delay3}`}
+              ref={(el) => addToRefs(el, 25)}
+            >
+              <div className={styles.contactInfo}>
+                <h3>Contact Information</h3>
+                <div className={styles.contactItem}>
+                  <FontAwesomeIcon
+                    icon={faEnvelope}
+                    className={styles.contactIcon}
+                  />
+                  <div>
+                    <h4>Email Us</h4>
+                    <a href="mailto:iranolafavour17@gmail.com">
+                      iranolafavour17@gmail.com
+                    </a>
+                    <br />
+                    <a href="mailto:emmanuelakinlosotu12@gmail.com">
+                      emmanuelakinlosotu12@gmail.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className={styles.contactItem}>
+                  <FontAwesomeIcon
+                    icon={faPhone}
+                    className={styles.contactIcon}
+                  />
+                  <div>
+                    <h4>Call Us</h4>
+                    <a href="tel:+13658802271">+1 (365) 880-2271</a> (Favour)
+                    <br />
+                    <a href="tel:+19053246652">+1 (905) 324-6652</a> (Emmanuel)
+                  </div>
+                </div>
+
+                <div className={styles.contactItem}>
+                  <FontAwesomeIcon
+                    icon={faMapMarkerAlt}
+                    className={styles.contactIcon}
+                  />
+                  <div>
+                    <h4>Location</h4>
+                    <p>Serving the Niagara Region, Ontario</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* Footer with improved visibility */}
+      {/* Updated Footer */}
       <footer className={styles.footer}>
         <div className={styles.container}>
-          <div
-            className={`${styles.socialLinks} ${styles.scrollReveal} ${styles.delay1}`}
-            ref={(el) => addToRefs(el, 17)}
-          >
-            <Link href="https://linkedin.com" aria-label="LinkedIn Profile">
-              <FontAwesomeIcon icon={faLinkedin} />
-            </Link>
-            <Link href="https://instagram.com" aria-label="Instagram Profile">
-              <FontAwesomeIcon icon={faInstagram} />
-            </Link>
-            <Link href="https://twitter.com" aria-label="Twitter Profile">
-              <FontAwesomeIcon icon={faTwitter} />
-            </Link>
+          <div className={styles.footerGrid}>
+            <div
+              className={`${styles.footerCol} ${styles.scrollReveal} ${styles.delay1}`}
+              ref={(el) => addToRefs(el, 26)}
+            >
+              <h3>X Niagara</h3>
+              <p>
+                Digital excellence for the Niagara Region. We blend technology
+                and marketing expertise to help local businesses thrive in the
+                digital landscape.
+              </p>
+            </div>
+
+            <div
+              className={`${styles.footerCol} ${styles.scrollReveal} ${styles.delay2}`}
+              ref={(el) => addToRefs(el, 27)}
+            >
+              <h3>Connect with Favour</h3>
+              <ul className={styles.footerLinks}>
+                <li>
+                  <FontAwesomeIcon
+                    icon={faLinkedin}
+                    className={styles.footerIcon}
+                  />
+                  <a
+                    href="https://www.linkedin.com/in/favouriranola/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <FontAwesomeIcon
+                    icon={faPhone}
+                    className={styles.footerIcon}
+                  />
+                  <a href="tel:+13658802271">+1 (365) 880-2271</a>
+                </li>
+                <li>
+                  <FontAwesomeIcon
+                    icon={faGlobe}
+                    className={styles.footerIcon}
+                  />
+                  <a
+                    href="https://favouriranolaportfolio.my.canva.site/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Personal Website
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div
+              className={`${styles.footerCol} ${styles.scrollReveal} ${styles.delay3}`}
+              ref={(el) => addToRefs(el, 28)}
+            >
+              <h3>Connect with Emmanuel</h3>
+              <ul className={styles.footerLinks}>
+                <li>
+                  <FontAwesomeIcon
+                    icon={faLinkedin}
+                    className={styles.footerIcon}
+                  />
+                  <a
+                    href="https://www.linkedin.com/in/emanakin/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <FontAwesomeIcon
+                    icon={faPhone}
+                    className={styles.footerIcon}
+                  />
+                  <a href="tel:+19053246652">+1 (905) 324-6652</a>
+                </li>
+                <li>
+                  <FontAwesomeIcon
+                    icon={faGlobe}
+                    className={styles.footerIcon}
+                  />
+                  <a
+                    href="https://www.emmanuelakinlosotu.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Personal Website
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
+
           <div
-            className={`${styles.footerContact} ${styles.scrollReveal} ${styles.delay2}`}
-            ref={(el) => addToRefs(el, 18)}
-          >
-            <p>
-              <FontAwesomeIcon icon={faEnvelope} />{" "}
-              <a href="mailto:info@xniagara.ca">info@xniagara.ca</a>
-            </p>
-            <p>
-              <FontAwesomeIcon icon={faPhone} />{" "}
-              <a href="tel:+19055551234">+1 (905) 555-1234</a>
-            </p>
-            <p>
-              <FontAwesomeIcon icon={faMapMarkerAlt} /> Serving the Niagara
-              Region, Ontario
-            </p>
-          </div>
-          <div
-            className={`${styles.copyright} ${styles.scrollReveal} ${styles.delay3}`}
-            ref={(el) => addToRefs(el, 19)}
+            className={`${styles.copyright} ${styles.scrollReveal} ${styles.delay4}`}
+            ref={(el) => addToRefs(el, 29)}
           >
             &copy; {currentYear} X Niagara by Favour & Emmanuel. All Rights
             Reserved.
